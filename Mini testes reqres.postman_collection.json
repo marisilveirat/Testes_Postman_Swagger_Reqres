@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "e6af1187-3ca7-4ed1-a8d7-6baf13764cef",
+		"name": "Mini testes reqres",
+		"description": "Swagger do Reqres: [https://reqres.in/api-docs/#/default/get__resource](https://reqres.in/api-docs/#/default/get__resource)_\n\nTestes feitos:\n\n1. GET RESOURCE - Testando o funcionamento da URL\n    \n2. GET USER - Buscando informação específica sobre mais de um usuário por lista em vários IDs > busca de e-mail > Python\n    \n3. AGET USER ID EXIST - Buscando todas as informações de um único ID\n    \n4. GET USER IS NON EXISTE - Forçando erro 404\n    \n5. GET USER DELAY - Estipulando tempo limite para retorno de 3 segundos > api users\n    \n6. REGISTER USER - Vamos validar o ID e o token de registro (e-mail & password) - autenticação de login, é POST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32835504"
+	},
+	"item": [
+		{
+			"name": "1 - GET RESOURCE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"var jsonResponse = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validação valores page e per page\", function () {\r",
+							"    pm.expect(jsonResponse.page).to.eq(3)\r",
+							"    pm.expect(jsonResponse.per_page).to.eq(2)\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "https://reqres.in/api/{resource}?page=3&per_page=2",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"{resource}"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "3"
+						},
+						{
+							"key": "per_page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2 - API GET USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"var jsonResponse = pm.response.json();\r",
+							"\r",
+							"var email1 = jsonResponse.data[0].email //trazendo os dados porque é uma lista [index após data, nº id das listas]\r",
+							"var email2 = jsonResponse.data[1].email\r",
+							"\r",
+							"console.log(email1)\r",
+							"console.log(email2)  // é um dado específico por ID na lista\r",
+							"\r",
+							"//Validando o valor fixo\r",
+							"pm.test(\"Validação de e-mail\", function () {\r",
+							"    pm.expect(email1).to.eq(\"george.bluth@reqres.in\");\r",
+							"    pm.expect(email2).to.eq(\"janet.weaver@reqres.in\");\r",
+							"    });\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://reqres.in/api/users?page=1&per_page=4",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "per_page",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3 - GET USER ID EXIST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"//validação de dados gerais de uma ID só\r",
+							"var jsonResponse = pm.response.json();\r",
+							"\r",
+							"console.log(jsonResponse)\r",
+							"\r",
+							"pm.test(\"Validação total dos dados\", function () {\r",
+							"    pm.expect(jsonResponse.data.id).to.eq(4);\r",
+							"    pm.expect(jsonResponse.data.email).to.contain(\"@\");\r",
+							"    pm.expect(jsonResponse.data.first_name).to.not.contain(\"Alice\");\r",
+							"    pm.expect(jsonResponse.data.last_name).to.eq(\"Weaver\");\r",
+							"    });"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://reqres.in/api/users/4",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4 - GET USER IS NON EXIST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    });\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://reqres.in/api/users/2000",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users",
+						"2000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5 - GET USER DELAY",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"var jsonResponse = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Tempo de resposta menor que 5s\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(5600)\r",
+							"    console.log\r",
+							"    });"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://reqres.in/api/users?delay=5",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "delay",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6 - POST USER REGISTER - NÃO TÁ TIRANDO, TÁ ADICIONANDO",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonResponse = pm.response.json(); // Obter a resposta JSON\r",
+							"\r",
+							"console.log(jsonResponse);\r",
+							"\r",
+							"pm.test(\"Validando ID do usuário\", function () {\r",
+							"    pm.expect(jsonResponse.id).to.eq(4); // Acessar o campo id\r",
+							"    pm.expect(jsonResponse.token).to.not.be.empty; // Acessar o campo token\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"eve.holt@reqres.in\",\r\n  \"password\": \"pistol\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/register",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
